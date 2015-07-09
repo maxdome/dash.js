@@ -42,6 +42,7 @@ MediaPlayer.dependencies.BufferController = function () {
         lastIndex = -1,
         type,
         buffer = null,
+        bufferedRangeStartTimes = [],
         minBufferTime,
         hasSufficientBuffer = null,
         appendedBytesInfo,
@@ -147,6 +148,29 @@ MediaPlayer.dependencies.BufferController = function () {
             appendNext.call(this);
 		},
 
+        checkForBufferPruningByBrowser = function() {
+            var ranges = this.sourceBufferExt.getAllRanges(buffer),
+                self = this;
+
+            if (ranges && ranges.length > 0) {
+                for (var i = 0; i < ranges.length; i++) {
+                    var newStart = ranges.start(i);
+                    var lastStart = bufferedRangeStartTimes[i];
+                    if (typeof lastStart !== 'undefined') {
+                        console.info('buffered ' + type + ' range ' + i + ': start ' + newStart + ' (' + lastStart + ')');
+                        if (lastStart !== newStart) {
+                            console.info('start time changed, updating and clearing requests');
+                            bufferedRangeStartTimes[i] = newStart;
+                            self.notify(MediaPlayer.dependencies.SourceBufferExtensions.eventList.ENAME_SOURCEBUFFER_REMOVE_COMPLETED, {buffer: buffer, from: lastStart, to: newStart});
+                            break;
+                        }
+                    } else {
+                        bufferedRangeStartTimes.push(newStart);
+                    }
+                }
+            }
+        },
+
         appendToBuffer = function(chunk) {
             isAppendingInProgress = true;
             appendedBytesInfo = chunk;
@@ -217,6 +241,7 @@ MediaPlayer.dependencies.BufferController = function () {
 
             self.notify(MediaPlayer.dependencies.BufferController.eventList.ENAME_BYTES_APPENDED, {quality: appendedBytesInfo.quality, index: appendedBytesInfo.index, bufferedRanges: ranges});
             onAppendToBufferCompleted.call(self, appendedBytesInfo.quality, appendedBytesInfo.index);
+            checkForBufferPruningByBrowser.call(self);
         },
 
         updateBufferLevel = function() {

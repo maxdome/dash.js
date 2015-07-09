@@ -264,6 +264,7 @@ MediaPlayer.dependencies.PlaybackController = function () {
                 firstAppended.ready = !((stream.hasMedia("audio") && !firstAppended[id].audio) || (stream.hasMedia("video") && !firstAppended[id].video));
             }
 
+            return;
             if (!ranges || !ranges.length) return;
 
             bufferedStart = Math.max(ranges.start(0), streamInfo.start);
