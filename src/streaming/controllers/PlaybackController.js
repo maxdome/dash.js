@@ -273,8 +273,14 @@ MediaPlayer.dependencies.PlaybackController = function () {
             // time exceeds the common earliest time
             if ((currentEarliestTime === commonEarliestTime[id] && (time === currentEarliestTime)) || !firstAppended.ready || (time > commonEarliestTime[id])) return;
 
-            // seek to the start of buffered range to avoid stalling caused by a shift between audio and video media time
-            this.seek(commonEarliestTime[id]);
+            // reset common earliest time every time user seeks
+            // to avoid mismatches when video element has discarded buffers silently
+            if (this.isSeeking()) {
+                commonEarliestTime = {};
+            } else {
+                // seek to the start of buffered range to avoid stalling caused by a shift between audio and video media time
+                this.seek(commonEarliestTime[id]);
+            }
         },
 
         onBufferLevelStateChanged = function(e) {
