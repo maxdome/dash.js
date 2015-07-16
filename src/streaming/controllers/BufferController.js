@@ -668,6 +668,8 @@ MediaPlayer.dependencies.BufferController = function () {
          */
         createBuffer: createBuffer,
 
+        clearBuffer: clearBuffer,
+
         getStreamProcessor: function() {
             return this.streamProcessor;
         },
