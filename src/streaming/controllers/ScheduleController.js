@@ -319,13 +319,13 @@ MediaPlayer.dependencies.ScheduleController = function () {
 
         onPlaybackSeeking = function(e) {
             if (!initialPlayback) {
-                // clear all buffers + executedRequests when user is seeking
-                // to avoid playback stuck when video element has discarded buffers silently
-                if (this.bufferController.getBuffer().buffered.length > 0) {
-                    this.bufferController.virtualBuffer.reset();
-                    this.bufferController.clearBuffer();
-                }
                 fragmentModel.cancelPendingRequests();
+                fragmentModel.abortRequests();
+
+                // decrease to lowest quality in order to achieve faster starting of playback after seeking
+                if (MediaPlayer.dependencies.ScheduleController.DECREASE_QUALITY_ON_SEEK_TIMEOUT > -1) {
+                    this.abrController.setLowestQualityForTimeout(type, MediaPlayer.dependencies.ScheduleController.DECREASE_QUALITY_ON_SEEK_TIMEOUT);
+                }
             }
 
             var metrics = this.metricsModel.getMetricsFor("stream"),
@@ -476,3 +476,4 @@ MediaPlayer.dependencies.ScheduleController.prototype = {
 };
 
 MediaPlayer.dependencies.ScheduleController.LOADING_REQUEST_THRESHOLD = 0;
+MediaPlayer.dependencies.ScheduleController.DECREASE_QUALITY_ON_SEEK_TIMEOUT = 5000;
