@@ -32,6 +32,7 @@ import CommonEncryption from './../CommonEncryption';
 import KeySystemClearKey from './../drm/KeySystemClearKey';
 import KeySystemWidevine from './../drm/KeySystemWidevine';
 import KeySystemPlayReady from './../drm/KeySystemPlayReady';
+import KeySystemYoutube from './../drm/KeySystemYoutube';
 import DRMToday from './../servers/DRMToday';
 import PlayReady from './../servers/PlayReady';
 import Widevine from './../servers/Widevine';
@@ -63,6 +64,10 @@ function ProtectionKeyController() {
         keySystems = [];
 
         var keySystem;
+
+        // Youtube
+        keySystem = KeySystemYoutube(context).getInstance();
+        keySystems.push(keySystem);
 
         // PlayReady
         keySystem = KeySystemPlayReady(context).getInstance();
@@ -260,6 +265,8 @@ function ProtectionKeyController() {
             licenseServerData = DRMToday(context).getInstance();
         } else if (keySystem.systemString === 'com.widevine.alpha') {
             licenseServerData = Widevine(context).getInstance();
+        } else if (keySystem.systemString === 'com.youtube.playready') {
+            licenseServerData = PlayReady(context).getInstance();
         } else if (keySystem.systemString === 'com.microsoft.playready') {
             licenseServerData = PlayReady(context).getInstance();
         } else if (keySystem.systemString === 'org.w3.clearkey') {
