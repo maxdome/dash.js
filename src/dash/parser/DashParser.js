@@ -57,7 +57,16 @@ function DashParser(/*config*/) {
             new NumericMatcher()
         ];
 
-        converter = new X2JS(matchers, '', true);
+        converter = new X2JS({
+            escapeMode:         false,
+            attributePrefix:    '',
+            arrayAccessForm:    'property',
+            emptyNodeForm:      'object',
+            stripWhitespaces:   false,
+            enableToStringFunc: false,
+            ignoreRoot:         true,
+            matchers:           matchers
+        });
 
         objectIron = new ObjectIron([
             new RepresentationBaseValuesMap(),
