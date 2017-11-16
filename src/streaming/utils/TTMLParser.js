@@ -217,7 +217,15 @@ function TTMLParser() {
 
         var errorMsg = '';
 
-        let converter = new X2JS([], '', false);
+        let converter = new X2JS({
+            escapeMode:         false,
+            attributePrefix:    '',
+            arrayAccessForm:    'property',
+            emptyNodeForm:      'object',
+            stripWhitespaces:   false,
+            enableToStringFunc: false,
+            matchers:           []
+        });
 
         // Parse the TTML in a JSON object.
         ttml = converter.xml_str2json(data);
