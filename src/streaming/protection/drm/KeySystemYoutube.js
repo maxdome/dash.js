@@ -64,6 +64,11 @@ function KeySystemYoutube() {
         for (var i = 0; i < headerNameList.length; i++) {
             headers[headerNameList[i].childNodes[0].nodeValue] = headerValueList[i].childNodes[0].nodeValue;
         }
+
+        // some CDMs do not return proper headers that are needed for Playready license servers
+        headers['Content-Type'] = 'text/xml; charset=' + ((messageFormat === 'utf16') ? 'utf-16' : 'utf-8');
+        headers.SOAPAction = 'http://schemas.microsoft.com/DRM/2007/03/protocols/AcquireLicense';
+
         // some versions of the PlayReady CDM return 'Content' instead of 'Content-Type'.
         // this is NOT w3c conform and license servers may reject the request!
         // -> rename it to proper w3c definition!
